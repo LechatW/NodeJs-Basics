@@ -1,16 +1,27 @@
-const http = require('http');
+const { response } = require('express');
+const express = require('express');
+const app = express();
 
-function handleRequest(request, response) {
+app.use(express.urlencoded({extended: false}));
 
-    if (request.url === '/current-time') {
-        response.statusCode = 200;
-        response.end('<h1>' + new Date().toISOString() + '</h1>');
-    } else if (request.url === '/') {
-        response.statusCode = 200;
-        response.end('<h1>Hello World</h1>');
-    }
-}
+app.get('/current-time', function(request, response) {
+    response.send('<h1>' + new Date().toISOString() + '</h1>');
+});
 
-const server = http.createServer(handleRequest);
+app.get('/', function(request, response) {
+    response.send(`
+        <form action="/store-user" method="POST">
+            <label>Your name</label>
+            <input type="text" name="username"></input>
+            <button>Submit</button>
+        </form>
+    `);
+})
 
-server.listen(3000);
+app.post('/store-user', function(request, reponse) {
+    const username = request.body.username;
+    console.log(username);
+    response.send('<h1>Username Stored !</h1>');
+})
+
+app.listen(3000);
