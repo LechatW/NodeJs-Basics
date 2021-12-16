@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  nodejs:
+    container_name: expressjs
+    image: node:17-alpine
+    build: .
+    ports:
+      - "8000:9000"
+    volumes:
+      - .:/usr/src/app
+      - ./node_modules:/usr/src/app/node_modules

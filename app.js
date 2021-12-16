@@ -1,4 +1,5 @@
-const { response } = require('express');
+const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const app = express();
 
@@ -16,12 +17,34 @@ app.get('/', function(request, response) {
             <button>Submit</button>
         </form>
     `);
-})
+});
 
-app.post('/store-user', function(request, reponse) {
+app.get('/users', function(request, response) {
+    const filePath = path.join(__dirname, 'data', 'users.json');
+    const fileData = fs.readFileSync(filePath);
+    const existingUsers = JSON.parse(fileData);
+
+    let responseData = '<ul>';
+
+    for (const user of existingUsers) {
+        responseData += '<li>' + user + '</li>'
+    }
+
+    responseData += '</ul>';
+
+    response.send(responseData);
+});
+
+app.post('/store-user', function(request, response) {
     const username = request.body.username;
-    console.log(username);
-    response.send('<h1>Username Stored !</h1>');
-})
+    const filePath = path.join(__dirname, 'data', 'users.json');
+    const fileData = fs.readFileSync(filePath);
+    const existingUsers = JSON.parse(fileData);
 
-app.listen(3000);
+    existingUsers.push(username);
+    fs.writeFileSync(filePath, JSON.stringify(existingUsers)); 
+
+    response.send('<h1>Username Stored !</h1>');
+});
+
+app.listen(9000);
